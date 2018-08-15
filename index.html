@@ -1,0 +1,217 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+
+	<title>Quick Start - Leaflet</title>
+
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.3/dist/leaflet.css"/>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.3.3/dist/leaflet.js" crossorigin=""></script>
+
+    <style>
+    h1 {
+      text-align: center;
+    }
+  </style>
+
+</head>
+<body>
+
+
+  <div class="container">
+    <h1>Air Quality Tracker</h1>
+    <ul id="feeddata" class="list-group">
+      <!--
+      <span class="list-group-item">Sensor 1: <li id="sensor1"></li></span>
+      <span class="list-group-item">Sensor 2: <li id="sensor2"></li></span>
+      <span class="list-group-item">Sensor 3: <li id="sensor3"></li></span>
+      <span class="list-group-item">Sensor 4: <li id="sensor4"></li></span>
+      <span class="list-group-item">Sensor 5: <li id="sensor5"></li></span>
+      <span class="list-group-item">Sensor 6: <li id="sensor6"></li></span>
+      <span class="list-group-item">Sensor 7: <li id="sensor7"></li></span>
+      <span class="list-group-item">Sensor 8: <li id="sensor8"></li></span>
+      -->
+      <span class="list-group-item">Anandanagar: <li id="anandanagar"></li></span>
+      <span class="list-group-item">Mandi Mohalla: <li id="mandimohalla"></li></span>
+      <span class="list-group-item">VVIET: <li id="vviet"></li></span>
+      <span class="list-group-item">Goklum: <li id="goklum"></li></span>
+    </ul>
+  </div>
+<div id="mapid" style="width: 100%; height: 400px;">
+
+</div>
+<script>
+  const ul = document.getElementById('feeddata');
+  const url = 'https://api.thingspeak.com/channels/547689/fields/1.json?api_key=X5S69PMCEOM5KZHA&results=2';
+    var circle = [];
+
+$(document).ready(function() {
+
+  initMap();
+  getUpdates();
+
+  //setInterval('getUpdates()', 3000);
+
+});
+
+  function getUpdates() {
+    $.getJSON('https://api.thingspeak.com/channels/547689/feeds.json?api_key=X5S69PMCEOM5KZHA&results=2', function(data){
+      //console.log(data.feeds[0]);
+    })
+    .done(function(data){
+      //console.log(data);
+      //console.log(data.feeds[0]);
+      //console.log(data.feeds[0].field1);
+        //$("#sensor1").text(data.feeds[0].field1);
+        //$("#sensor2").text(data.feeds[0].field2);
+        //$("#sensor3").text(data.feeds[0].field3);
+        //$("#sensor4").text(data.feeds[0].field4);
+        //$("#sensor5").text(data.feeds[0].field5);
+       // $("#sensor6").text(data.feeds[0].field6);
+        //$("#sensor7").text(data.feeds[0].field7);
+        //$("#sensor8").text(data.feeds[0].field8);
+
+        $("#anandanagar").text((parseInt(data.feeds[0].field1)+parseInt(data.feeds[0].field2))/2);
+        $("#mandimohalla").text((parseInt(data.feeds[0].field3)+parseInt(data.feeds[0].field4))/2);
+        $("#vviet").text((parseInt(data.feeds[0].field5)+parseInt(data.feeds[0].field6))/2);
+        $("#goklum").text((parseInt(data.feeds[0].field7)+parseInt(data.feeds[0].field8))/2);
+        //console.log(data);
+        var fieldValues = [];
+
+        fieldValues.push(data.feeds[0].field1);
+        fieldValues.push(data.feeds[0].field2);
+        fieldValues.push(data.feeds[0].field3);
+        fieldValues.push(data.feeds[0].field4);
+        fieldValues.push(data.feeds[0].field5);
+        fieldValues.push(data.feeds[0].field6);
+        fieldValues.push(data.feeds[0].field7);
+        fieldValues.push(data.feeds[0].field8);
+
+        updateMap(data.feeds[0], fieldValues);
+    });
+  }
+
+  function initMap(){
+      var mymap = L.map('mapid').setView([ 12.29436636852639, 76.6057026386261], 19);
+       $('#mapid').height(window.innerHeight);
+
+       L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      maxZoom: 18,
+      attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+        '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+        'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+      id: 'mapbox.streets'
+    }).addTo(mymap);
+
+    //Anandanagar
+    var marker1 = L.marker([12.294405678972714, 76.60730123519897]);
+    var marker2 = L.marker([12.298431037555293, 76.60629272460938]);
+
+    //Mandi Mohalla
+    var marker3 = L.marker([12.315684870634941, 76.65238380432129]);
+    var marker4 = L.marker([12.311575919670698, 76.65298461914062]);
+
+    //VVIET
+    var marker5 = L.marker([12.304227864894273, 76.70753002166748]);
+    var marker6 = L.marker([12.304647160284029, 76.70690774917603]);
+
+    //Gokulm
+    var marker7 = L.marker([12.326460079277533, 76.62856578826904]);
+    var marker8 = L.marker([ 12.330443020984339, 76.63036823272705]);
+
+
+
+    var featureGroup = L.featureGroup([marker1, marker2, marker3, marker4, marker5, marker6, marker7,marker8]).addTo(mymap);
+
+    //Anandanagar
+    circle.push(L.circle([12.294405678972714, 76.60730123519897], 100, {
+      //fillColor: '#f03',
+      fillOpacity: 0.5
+    }).addTo(mymap));
+
+    circle.push(L.circle([12.298431037555293, 76.60629272460938], 100, {
+      //fillColor: '#f03',
+      fillOpacity: 0.5
+    }).addTo(mymap));
+
+    //Mandi Mohala
+    circle.push(L.circle([12.315684870634941, 76.65238380432129], 100, {
+      //fillColor: '#f03',
+      fillOpacity: 0.5
+    }).addTo(mymap));
+
+    circle.push(L.circle([12.311575919670698, 76.65298461914062], 100, {
+      //fillColor: '#f03',
+      fillOpacity: 0.5
+    }).addTo(mymap));
+
+    //VVIET
+    circle.push(L.circle([12.304227864894273, 76.70753002166748], 100, {
+      //fillColor: '#f03',
+      fillOpacity: 0.5
+    }).addTo(mymap));
+    circle.push(L.circle([12.304647160284029, 76.70690774917603], 100, {
+      //fillColor: '#f03',
+      fillOpacity: 0.5
+    }).addTo(mymap));
+
+    //Gokulam
+    circle.push(L.circle([12.326460079277533, 76.62856578826904], 100, {
+      //fillColor: '#f03',
+      fillOpacity: 0.5
+    }).addTo(mymap));
+    circle.push(L.circle([ 12.330443020984339, 76.63036823272705], 100, {
+      //fillColor: '#f03',
+      fillOpacity: 0.5
+    }).addTo(mymap));
+
+    mymap.fitBounds(featureGroup.getBounds(), {
+      padding: [20, 20]
+    });
+
+
+  }
+
+  function updateMap(data, fieldValues){
+
+      console.log(data);
+      console.log(fieldValues);
+
+      var avgOfAreas = [];
+
+      for(var i=0; i<4; i=i+2){
+        avgOfAreas.push(parseInt(fieldValues[i])+parseInt(fieldValues[i+1])/2);
+      }
+      console.log(avgOfAreas);
+
+      for(var i=0; i<circle.length; i++){
+        if(parseInt(fieldValues[i]) > 250){
+
+          circle[i].setStyle({
+            color: 'red'
+          });
+        }
+        else{
+          circle[i].setStyle({
+            color: 'green'
+          });
+        }
+
+      }
+
+       // circle1.setStyle({
+       //    color: 'red'
+       //  });
+    }
+  	
+</script>
+
+
+
+</body>
+</html>
